@@ -72,6 +72,23 @@
 .g-term{font-size:13px;font-weight:700;color:#4B3BC8;margin-bottom:2px}
 .g-def{font-size:11px;color:#555;line-height:1.5}
 
+/* Profile Button & Dropdown */
+.profile-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;transition:background .2s}
+.profile-btn:hover{background:rgba(255,255,255,.25)}
+.profile-btn i{font-size:18px;color:#fff}
+.profile-dropdown{position:absolute;top:44px;right:0;background:#fff;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.15);min-width:200px;overflow:hidden;z-index:200;display:none;animation:dropdownIn .2s ease}
+.profile-dropdown.show{display:block}
+.profile-dropdown-header{padding:14px 16px;background:#F8F7FC;border-bottom:1px solid #EAEAEA}
+.profile-dropdown-email{font-size:12px;color:#4B3BC8;font-weight:600;word-break:break-all;margin-bottom:2px}
+.profile-dropdown-name{font-size:10px;color:#888}
+.profile-dropdown-item{padding:12px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;color:#1A1A2E;font-weight:500;transition:background .15s;border:none;background:none;width:100%;text-align:left}
+.profile-dropdown-item:hover{background:#F5F5F8}
+.profile-dropdown-item i{font-size:16px;color:#666;width:20px;text-align:center}
+.profile-dropdown-item.danger{color:#E05555}
+.profile-dropdown-item.danger i{color:#E05555}
+.profile-dropdown-divider{height:1px;background:#EAEAEA;margin:4px 0}
+@keyframes dropdownIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+
 /* MAP & NAVIGATION STYLES */
 .map-canvas{width:100%;height:180px;position:relative;overflow:hidden}
 .map-canvas svg{width:100%;height:100%}
@@ -245,6 +262,29 @@
     <div class="h-hdr">
       <div class="h-top">
         <div class="h-appname">CampusMate</div>
+        <!-- Profile Button -->
+        <div style="position:relative;">
+          <button class="profile-btn" onclick="toggleProfileDropdown(event)" id="profileBtn">
+            <i class="ti ti-user-circle"></i>
+          </button>
+          <!-- Profile Dropdown -->
+          <div class="profile-dropdown" id="profileDropdown">
+            <div class="profile-dropdown-header">
+              <div class="profile-dropdown-email">alex@student.upm.edu.my</div>
+              <div class="profile-dropdown-name">Alex Chen</div>
+            </div>
+            <button class="profile-dropdown-item" onclick="alert('Notifications feature coming soon!')">
+              <i class="ti ti-bell"></i> Notifications
+            </button>
+            <button class="profile-dropdown-item" onclick="alert('Help & Support: Contact support@campusmate.app')">
+              <i class="ti ti-help-circle"></i> Help & Support
+            </button>
+            <div class="profile-dropdown-divider"></div>
+            <button class="profile-dropdown-item danger" onclick="confirmLogout()">
+              <i class="ti ti-logout"></i> Log Out
+            </button>
+          </div>
+        </div>
       </div>
       <div class="h-greet">Hi, Alex! 👋</div>
       <div class="h-sub">Perpustakaan Sultan Abdul Samad · UPM</div>
@@ -1109,6 +1149,35 @@ function setLang(l){
 }
 function toggleLang(){setLang(lang==='en'?'my':'en');}
 
+// Profile Dropdown Toggle
+function toggleProfileDropdown(e) {
+  e.stopPropagation();
+  const dropdown = document.getElementById('profileDropdown');
+  dropdown.classList.toggle('show');
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+  const dropdown = document.getElementById('profileDropdown');
+  const profileBtn = document.getElementById('profileBtn');
+  if (dropdown && profileBtn && !profileBtn.contains(e.target) && !dropdown.contains(e.target)) {
+    dropdown.classList.remove('show');
+  }
+});
+
+// Logout confirmation
+function confirmLogout() {
+  const dropdown = document.getElementById('profileDropdown');
+  dropdown.classList.remove('show');
+  if (confirm('Are you sure you want to log out?')) {
+    // Placeholder logout action
+    document.querySelector('.h-greet').textContent = 'Goodbye! 👋';
+    setTimeout(() => {
+      document.querySelector('.h-greet').textContent = 'Hi, Alex! 👋';
+    }, 2000);
+  }
+}
+
 function navTab(id){
   showScr(id);
   document.querySelectorAll('.bnav .ni').forEach(n=>n.classList.toggle('act',n.dataset.tab===id));
@@ -1123,6 +1192,10 @@ function showScr(id){
   } else {
     stopTranslation();
   }
+
+  // Close profile dropdown when switching screens
+  const dropdown = document.getElementById('profileDropdown');
+  if (dropdown) dropdown.classList.remove('show');
 
   // Status Bar text color switcher
   const statusbar = document.querySelector('.phone-status-bar');
